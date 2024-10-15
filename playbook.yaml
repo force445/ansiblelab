@@ -1,0 +1,28 @@
+---
+  - name: Install nginx 
+    hosts: all
+    become: true
+    tasks:
+      - name: Install nginx
+        apt:
+          name: nginx
+          state: latest
+      - name: Start nginx
+        service:
+          name: nginx
+          state: started
+      - name: Allow Uncomplicated Firewall
+        ufw:
+          rule: allow
+          port: '80'
+          proto: tcp
+          state: enabled
+      - name: Copy newindex.html to public index.html
+        ansible.builtin.copy:
+          src: ~/ansiblelab/newindex.html
+          dest: /var/www/html/index.nginx-debian.html
+          follow: yes
+      - name: Restart nginx
+        ansible.builtin.service:
+          name: nginx
+          state: reloaded
